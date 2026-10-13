@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#101010">
+<title>RuangNada — Pemutar Musik</title>
+<style>
+:root{--bg:#090909;--panel:#151515;--panel2:#202020;--green:#1ed760;--muted:#aaa;--text:#f5f5f5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;padding-bottom:110px}
+button,input{font:inherit}button{cursor:pointer;border:0} .app{max-width:1100px;margin:auto;padding:22px}
+header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:26px}.brand{display:flex;align-items:center;gap:10px;font-size:22px;font-weight:800;letter-spacing:-.7px}.logo{display:grid;place-items:center;background:var(--green);color:#071208;width:36px;height:36px;border-radius:50%;font-size:19px}
+.pill{border:1px solid #383838;color:#ddd;border-radius:999px;padding:8px 12px;font-size:12px}
+.hero{background:linear-gradient(120deg,#21452f,#14251b 55%,#171717);padding:30px;border-radius:18px;margin-bottom:22px;overflow:hidden;position:relative}
+.eyebrow{color:#b7f4c9;text-transform:uppercase;font-size:11px;letter-spacing:2px;font-weight:700}.hero h1{font-size:clamp(28px,5vw,48px);letter-spacing:-1.8px;line-height:1.05;margin:12px 0}.hero p{color:#d0dfd4;max-width:600px;line-height:1.6;margin-bottom:0}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px}.panel{background:var(--panel);border-radius:16px;padding:20px;min-width:0}.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px}.section-head h2{font-size:18px;margin:0}.sub{color:var(--muted);font-size:12px;margin-top:5px}
+.field{display:block;margin:13px 0 5px;color:#d8d8d8;font-size:13px}.input{width:100%;background:#252525;color:white;border:1px solid #383838;border-radius:9px;padding:12px 13px;outline:none}.input:focus{border-color:var(--green)}.primary{background:var(--green);color:#071208;border-radius:999px;padding:11px 17px;font-weight:800}.secondary{background:#292929;color:white;border:1px solid #414141;border-radius:999px;padding:10px 14px}.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:16px}.hint{font-size:12px;color:var(--muted);line-height:1.5}.notice{display:none;margin-top:12px;font-size:12px;color:#b7f4c9}
+.track-list{display:flex;flex-direction:column;gap:7px}.track{display:grid;grid-template-columns:38px minmax(0,1fr) auto;align-items:center;gap:12px;padding:10px;border-radius:10px}.track:hover,.track.active{background:#262626}.cover{width:38px;height:38px;border-radius:7px;background:linear-gradient(135deg,#287b48,#151515);display:grid;place-items:center;color:#d8ffe2}.track-title{font-weight:650;font-size:14px;overflow-wrap:anywhere}.track-url{font-size:11px;color:#999;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:4px}.track-actions{display:flex;gap:6px}.iconbtn{background:transparent;color:#ddd;border-radius:50%;width:34px;height:34px;font-size:16px}.iconbtn:hover{background:#383838}.empty{text-align:center;color:#999;padding:28px 12px;font-size:13px;line-height:1.6}
+.side-stat{display:flex;justify-content:space-between;gap:12px;padding:12px 0;border-bottom:1px solid #2a2a2a;font-size:13px}.side-stat span:last-child{color:#ddd;text-align:right}.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--green);margin-right:7px}
+.player{position:fixed;bottom:0;left:0;right:0;background:rgba(15,15,15,.97);border-top:1px solid #292929;backdrop-filter:blur(15px);padding:12px 22px calc(12px + env(safe-area-inset-bottom));z-index:5}.player-inner{max-width:1100px;margin:auto;display:grid;grid-template-columns:1fr 1.2fr 1fr;align-items:center;gap:20px}.now{min-width:0}.now strong{display:block;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.now small{display:block;color:#999;font-size:11px;margin-top:4px}.controls{text-align:center}.control-buttons{display:flex;align-items:center;justify-content:center;gap:17px}.playbtn{background:var(--green);color:#071208;width:39px;height:39px;border-radius:50%;font-size:17px;font-weight:900}.minor{background:none;color:#ddd;font-size:17px}.timeline{display:flex;align-items:center;gap:8px;color:#aaa;font-size:10px;margin-top:7px}.timeline input{width:100%;accent-color:var(--green)}.volume{display:flex;align-items:center;justify-content:flex-end;gap:8px;color:#aaa}.volume input{width:90px;accent-color:var(--green)}.footer-note{color:#777;font-size:11px;line-height:1.5;margin-top:16px}
+@media(max-width:760px){.app{padding:14px}.hero{padding:23px}.layout{grid-template-columns:1fr}.player{padding-left:12px;padding-right:12px}.player-inner{grid-template-columns:1fr 1.2fr;gap:8px}.volume{display:none}.now small{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.control-buttons{gap:12px}}
+@media(max-width:380px){.now{display:none}.player-inner{grid-template-columns:1fr}.controls{width:100%}.hero h1{font-size:30px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand"><span class="logo">♫</span> RuangNada</div><span class="pill">PEMUTAR MUSIK PRIBADI</span></header>
+<section class="hero"><div class="eyebrow">Musik pilihanmu</div><h1>Semua lagu,<br>di satu ruang.</h1><p>Tambahkan lagu dari tautan MP3, susun antreanmu, lalu nikmati musik secara berurutan. Koleksi tersimpan di browser ini.</p></section>
+<div class="layout">
+<main class="panel">
+<div class="section-head"><div><h2>Perpustakaan lagu</h2><div class="sub">Tambahkan judul dan URL MP3 langsung</div></div><span class="pill" id="count">0 lagu</span></div>
+<form id="addForm">
+<label class="field" for="title">Judul lagu</label><input class="input" id="title" placeholder="Contoh: Lagu Favorit" maxlength="120" required>
+<label class="field" for="url">URL MP3</label><input class="input" id="url" type="url" placeholder="https://contoh.com/lagu.mp3" required>
+<div class="form-actions"><button class="primary" type="submit">＋ Tambahkan lagu</button><button class="secondary" type="button" id="clearAll">Kosongkan daftar</button></div>
+<div class="notice" id="notice" role="status"></div>
+</form>
+<div style="height:1px;background:#2b2b2b;margin:22px 0"></div>
+<div class="section-head"><div><h2>Antrean putar</h2><div class="sub">Lagu berikutnya akan diputar otomatis</div></div><button class="secondary" id="playAll">▶ Putar semua</button></div>
+<div class="track-list" id="tracks"></div>
+<div class="footer-note">Catatan: tautan harus bisa diakses langsung dan mengarah ke file audio (MP3). Sebagian situs memblokir pemutaran lintas domain (CORS/hotlink) atau meminta login.</div>
+</main>
+<aside class="panel">
+<div class="section-head"><h2>Ruang dengar</h2><span class="pill">BETA</span></div>
+<p class="hint">Pemutar ini mendukung pemutaran berurutan dan kontrol media perangkat. Untuk mendengar bersama orang lain secara global, diperlukan server sinkronisasi dan hosting audio yang bisa diakses publik.</p>
+<div class="side-stat"><span>Daftar lagu</span><span id="statTracks">0 lagu</span></div>
+<div class="side-stat"><span>Status pemutar</span><span id="status"><span class="dot"></span>Siap diputar</span></div>
+<div class="side-stat"><span>Penyimpanan</span><span>Browser ini</span></div>
+<div class="side-stat"><span>Dengarkan bersama</span><span>Perlu server online</span></div>
+<div class="footer-note">Tips latar belakang: mulai putar lagu, lalu pindah aplikasi. Dukungan bergantung pada browser, pengaturan baterai, dan perangkat. Untuk pengalaman stabil di iPhone/Android, situs bisa dikembangkan menjadi PWA.</div>
+</aside>
+</div>
+</div>
+<audio id="audio" preload="metadata"></audio>
+<div class="player"><div class="player-inner">
+<div class="now"><strong id="nowTitle">Belum ada lagu diputar</strong><small id="nowSub">Pilih lagu dari antrean</small></div>
+<div class="controls"><div class="control-buttons"><button class="minor" id="prev" aria-label="Lagu sebelumnya">⏮</button><button class="playbtn" id="toggle" aria-label="Putar">▶</button><button class="minor" id="next" aria-label="Lagu berikutnya">⏭</button></div><div class="timeline"><span id="elapsed">0:00</span><input type="range" id="seek" min="0" max="100" value="0" aria-label="Posisi lagu"><span id="duration">0:00</span></div></div>
+<div class="volume"><span>🔊</span><input id="volume" type="range" min="0" max="1" step=".01" value=".8" aria-label="Volume"></div>
+</div></div>
+<script>
+(() => {
+const $ = id => document.getElementById(id);
+const audio = $('audio');
+let songs = [];
+let current = -1;
+let noticeTimer;
+try { songs = JSON.parse(localStorage.getItem('ruangnada-songs') || '[]'); if (!Array.isArray(songs)) songs = []; } catch { songs = []; }
+const save = () => { try { localStorage.setItem('ruangnada-songs', JSON.stringify(songs)); } catch {} };
+function say(msg) { const el=$('notice'); el.textContent=msg; el.style.display='block'; clearTimeout(noticeTimer); noticeTimer=setTimeout(()=>el.style.display='none',4500); }
+function fmt(sec) { if (!Number.isFinite(sec) || sec < 0) return '0:00'; return Math.floor(sec/60)+':'+String(Math.floor(sec%60)).padStart(2,'0'); }
+function render() {
+ $('count').textContent=songs.length+' lagu'; $('statTracks').textContent=songs.length+' lagu';
+ const list=$('tracks'); list.innerHTML='';
+ if (!songs.length) { list.innerHTML='<div class="empty">♫<br>Belum ada lagu di sini.<br>Tambahkan lagu dengan URL MP3 di atas.</div>'; return; }
+ songs.forEach((song,i)=>{
+  const row=document.createElement('div'); row.className='track'+(i===current?' active':'');
+  const cover=document.createElement('div'); cover.className='cover'; cover.textContent=i===current&& !audio.paused?'♫':'♪';
+  const meta=document.createElement('div'); meta.style.minWidth='0';
+  const title=document.createElement('div'); title.className='track-title'; title.textContent=song.title;
+  const url=document.createElement('div'); url.className='track-url'; url.textContent=song.url;
+  meta.append(title,url);
+  const actions=document.createElement('div'); actions.className='track-actions';
+  const play=document.createElement('button'); play.className='iconbtn'; play.title='Putar lagu'; play.textContent=i===current&&!audio.paused?'Ⅱ':'▶'; play.onclick=()=>playSong(i);
+  const del=document.createElement('button'); del.className='iconbtn'; del.title='Hapus lagu'; del.textContent='×'; del.onclick=()=>removeSong(i);
+  actions.append(play,del); row.append(cover,meta,actions); list.append(row);
+ });
+}
+function updatePlayer() {
+ $('toggle').textContent=audio.paused?'▶':'Ⅱ';
+ $('elapsed').textContent=fmt(audio.currentTime); $('duration').textContent=fmt(audio.duration);
+ $('seek').value=Number.isFinite(audio.duration)&&audio.duration>0?audio.currentTime/audio.duration*100:0;
+ $('status').innerHTML=audio.paused?'<span class="dot"></span>Jeda / siap':'<span class="dot"></span>Sedang diputar';
+ render();
+}
+async function playSong(i) {
+ if (!songs.length) { say('Tambahkan lagu terlebih dahulu.'); return; }
+ current=(i+songs.length)%songs.length;
+ const song=songs[current];
+ audio.src=song.url;
+ $('nowTitle').textContent=song.title; $('nowSub').textContent='RuangNada • Lagu '+(current+1)+' dari '+songs.length;
+ render();
+ try { await audio.play(); updatePlayer(); }
+ catch(e) { $('status').textContent='Tidak dapat diputar'; say('Lagu gagal diputar. Periksa URL MP3 dan pastikan tautannya bisa diakses langsung tanpa login.'); }
+ if ('mediaSession' in navigator) {
+  navigator.mediaSession.metadata=new MediaMetadata({title:song.title,artist:'RuangNada',album:'Perpustakaan pribadi'});
+  navigator.mediaSession.setActionHandler('play',()=>audio.play().catch(()=>{}));
+  navigator.mediaSession.setActionHandler('pause',()=>audio.pause());
+  navigator.mediaSession.setActionHandler('previoustrack',()=>playSong((current-1+songs.length)%songs.length));
+  navigator.mediaSession.setActionHandler('nexttrack',()=>playSong((current+1)%songs.length));
+ }
+}
+function removeSong(i) {
+ const wasCurrent=i===current;
+ songs.splice(i,1); save();
+ if (!songs.length) { audio.pause(); audio.removeAttribute('src'); current=-1; $('nowTitle').textContent='Belum ada lagu diputar'; $('nowSub').textContent='Pilih lagu dari antrean'; }
+ else if (wasCurrent) { current=Math.min(i,songs.length-1); playSong(current); }
+ else if (i<current) current--;
+ render(); updatePlayer();
+}
+$('addForm').addEventListener('submit',e=>{
+ e.preventDefault(); const title=$('title').value.trim(), url=$('url').value.trim();
+ try { const parsed=new URL(url); if(!['http:','https:'].includes(parsed.protocol)) throw Error(); }
+ catch { say('Masukkan URL yang valid, diawali https:// atau http://'); return; }
+ songs.push({title,url}); save(); $('title').value=''; $('url').value=''; render(); say('Lagu ditambahkan ke antrean.');
+});
+$('clearAll').onclick=()=>{ if(!songs.length)return; if(confirm('Hapus semua lagu dari daftar?')) { songs=[]; current=-1; audio.pause(); audio.removeAttribute('src'); save(); $('nowTitle').textContent='Belum ada lagu diputar'; $('nowSub').textContent='Pilih lagu dari antrean'; render(); updatePlayer(); } };
+$('playAll').onclick=()=>playSong(current>=0?current:0);
+$('toggle').onclick=()=>{ if(current<0){if(songs.length)playSong(0);else say('Tambahkan lagu terlebih dahulu.');} else if(audio.paused)audio.play().then(updatePlayer).catch(()=>say('Tidak dapat memutar lagu ini.'));else audio.pause(); };
+$('next').onclick=()=>{if(songs.length)playSong(current<0?0:(current+1)%songs.length);};
+$('prev').onclick=()=>{if(songs.length) { if(audio.currentTime>3)audio.currentTime=0; else playSong(current<=0?songs.length-1:current-1); }};
+audio.addEventListener('ended',()=>{if(songs.length)playSong((current+1)%songs.length);});
+audio.addEventListener('timeupdate',updatePlayer); audio.addEventListener('play',updatePlayer); audio.addEventListener('pause',updatePlayer); audio.addEventListener('loadedmetadata',updatePlayer);
+audio.addEventListener('error',()=>{if(audio.src)say('Audio tidak bisa dimuat. Pastikan URL mengarah langsung ke file audio yang valid.');});
+$('seek').addEventListener('input',e=>{if(Number.isFinite(audio.duration))audio.currentTime=(Number(e.target.value)/100)*audio.duration;});
+$('volume').addEventListener('input',e=>audio.volume=Number(e.target.value)); audio.volume=.8;
+render(); updatePlayer();
+})();
+</script>
+</body>
+</html>
